@@ -4,9 +4,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Expression expression = new Multiply(new Multiply(new Variable(), new Variable()), new Multiply(new Exponent(new Multiply(new Const(3), new Variable())), new Multiply(new Const(0.5), new Variable()
-        )));
-        Expression expo = ExpressionUtils.getExp(expression);
         Scanner sc = new Scanner(System.in);
         double a = sc.nextDouble();
         sc.nextLine();

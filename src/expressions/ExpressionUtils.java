@@ -6,7 +6,7 @@ public class ExpressionUtils {
     public static Expression parse(String s) {
         pos = 0;
         String[] arr = s.replace(")", " ) ").replace("(", " ( ").replace("+", " + ").
-                replace("*", " * ").trim().split("\\s+");
+                replace("-", " - ").replace("*", " * ").trim().split("\\s+");
         return parseRec(arr);
     }
 
@@ -18,11 +18,11 @@ public class ExpressionUtils {
         return simplify(new Add(exp1, exp2));
     }
 
-    private static Expression sub(Expression exp1, Expression exp2) {
-        return simplify(new Subtract(exp1, exp2));
+    private static Expression neg(Expression exp) {
+        return simplify(new Negate(exp));
     }
 
-    public static Expression parseRec(String[] arr) {
+    private static Expression parseRec(String[] arr) {
         if (arr[pos].equals("x")) {
             pos++;
             return new Variable();
@@ -43,7 +43,7 @@ public class ExpressionUtils {
                     case "+":
                         return new Add(a, b);
                     case "-":
-                        return new Subtract(a, b);
+                        return new Add(a, new Negate(b));
                     case "*":
                         return new Multiply(a, b);
                 }
@@ -56,7 +56,7 @@ public class ExpressionUtils {
         expression = simplifyMult(expression);
         if (expression instanceof DoubleExpression doubleExpression) {
             ((DoubleExpression) expression).setExp1(simplify(((DoubleExpression) expression).getExp1()));
-            ((DoubleExpression) expression).setExp2(((DoubleExpression) expression).getExp2());
+            ((DoubleExpression) expression).setExp2(simplify(((DoubleExpression) expression).getExp2()));
             if (doubleExpression.getExp1() instanceof Const && doubleExpression.getExp1().evaluate(1) == 0) {
                 if (expression instanceof Add) {
                     return simplify(doubleExpression.getExp2());
@@ -113,7 +113,7 @@ public class ExpressionUtils {
     }
 
     private static double getConst(Multiply multiply) {
-        Expression expo = getExp(multiply);
+        Expression expo = getExponent(multiply);
         if (expo == null) {
             return multiply.evaluate(1);
         } else {
@@ -122,7 +122,7 @@ public class ExpressionUtils {
     }
 
     private static int getPower(Multiply multiply) {
-        Expression expo = getExp(multiply);
+        Expression expo = getExponent(multiply);
         if (expo == null) {
             return (int) (0.01 + Math.log(multiply.evaluate(Math.E) / getConst(multiply)));
         } else {
@@ -137,13 +137,13 @@ public class ExpressionUtils {
         return mult(new Variable(), powerOf(n - 1));
     }
 
-    public static Expression getExp(Expression expression) {
+    private static Expression getExponent(Expression expression) {
         if (expression instanceof Exponent) {
             return expression;
         }
         if (expression instanceof Multiply) {
-            Expression expression1 = getExp(((Multiply) expression).getExp1());
-            Expression expression2 = getExp(((Multiply) expression).getExp2());
+            Expression expression1 = getExponent(((Multiply) expression).getExp1());
+            Expression expression2 = getExponent(((Multiply) expression).getExp2());
             if (expression1 instanceof Exponent) {
                 return expression1;
             }
@@ -167,9 +167,9 @@ public class ExpressionUtils {
             ans = integrate(mult(new Const(1), expression));
         } else if (expression instanceof Add) {
             ans = add(integrate(((Add) expression).getExp1()), integrate(((Add) expression).getExp2()));
-        } else if (expression instanceof Subtract) {
-            ans = sub(integrate(((Subtract) expression).getExp1()), integrate(((Subtract) expression).getExp2()));
-        } else if (expression instanceof Multiply && getExp(expression) == null) {
+        } else if (expression instanceof Negate) {
+            ans = neg(integrate(((Negate) expression).getExp()));
+        } else if (expression instanceof Multiply && getExponent(expression) == null) {
             double constant = getConst((Multiply) expression);
             int power = getPower((Multiply) expression);
             ans = mult(new Const(constant / (power + 1)), powerOf(power + 1));
@@ -179,11 +179,11 @@ public class ExpressionUtils {
             if (power == 0) {
                 ans = mult(expression, new Const(constant / expression.diff().evaluate(0)));
             } else {
-                Expression dv = getExp(expression);
+                Expression dv = getExponent(expression);
                 Expression u = mult(new Const(constant), powerOf(power));
                 Expression du = u.diff();
                 Expression v = integrate(simplify(dv));
-                return sub(mult(u, v), integrate(simplify(mult(du, v))));
+                return add(mult(u, v), neg(integrate(simplify(mult(du, v)))));
             }
         }
         return simplify(ans);
