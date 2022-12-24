@@ -8,6 +8,7 @@ public abstract class DoubleExpression implements Expression {
         this.exp2 = exp2;
     }
 
+
     abstract double f(double x, double y);
 
     @Override

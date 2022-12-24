@@ -25,4 +25,8 @@ public class Negate implements Expression {
     public Expression getExp() {
         return exp;
     }
+
+    public void setExp(Expression exp) {
+        this.exp = exp;
+    }
 }

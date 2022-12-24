@@ -22,4 +22,12 @@ public class Exponent implements Expression {
     public String toString() {
         return "(e ^ " + exp.toString() + ")";
     }
+
+    public Expression getExp() {
+        return exp;
+    }
+
+    public void setExp(Expression exp) {
+        this.exp = exp;
+    }
 }
