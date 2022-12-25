@@ -56,9 +56,6 @@ public class ExpressionUtils {
             expression = new Multiply(new Negate(simplify(((Multiply) ((Negate) expression).getExp()).getExp1())),
                     simplify(((Multiply) ((Negate) expression).getExp()).getExp2()));
         }
-        if (expression instanceof Exponent) {
-            ((Exponent) expression).setExp(simplify(((Exponent) expression).getExp()));
-        }
         if (expression instanceof DoubleExpression doubleExpression) {
             if (doubleExpression.getExp1() instanceof Const && doubleExpression.getExp1().evaluate(1) == 0) {
                 if (expression instanceof Add) {
@@ -84,7 +81,8 @@ public class ExpressionUtils {
                 expression = new Const(expression.evaluate(0));
             }
         }
-        return simplifyMult(expression);
+        expression = simplifyMult(expression);
+        return expression;
     }
 
     private static Expression simplifyMult(Expression expression) {
@@ -113,10 +111,7 @@ public class ExpressionUtils {
             ((DoubleExpression) expression).setExp2(simplifyMult(((DoubleExpression) expression).getExp2()));
         }
         if (expression instanceof Negate) {
-            ((Negate) expression).setExp(simplifyMult(((Negate) expression).getExp()));
-        }
-        if (expression instanceof Exponent) {
-            ((Exponent) expression).setExp(simplifyMult(((Exponent) expression).getExp()));
+            expression = simplifyMult(((Negate) expression).getExp());
         }
         return expression;
     }
@@ -180,6 +175,10 @@ public class ExpressionUtils {
     public static boolean hasAdd(Expression expression) {
         if (expression instanceof Add) {
             return true;
+        } else if (expression instanceof Negate) {
+            return hasAdd(((Negate) expression).getExp());
+        } else if (expression instanceof Exponent) {
+            return hasAdd(((Exponent) expression).getExp());
         } else if (expression instanceof Multiply) {
             return hasAdd(((Multiply) expression).getExp1()) || hasAdd(((Multiply) expression).getExp2());
         } else {
@@ -200,7 +199,7 @@ public class ExpressionUtils {
                 ans = new Multiply(expression, new Const(1 / expression.diff().evaluate(0)));
             }
         } else if (expression instanceof Const) {
-            if (expression.evaluate(1) == 0) {
+            if (expression.evaluate(0) == 0) {
                 return new Const(0);
             }
             ans = new Multiply(expression, new Variable());

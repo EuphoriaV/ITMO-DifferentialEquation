@@ -7,16 +7,13 @@ import java.util.Random;
 
 public class GenerateTest {
     public static void main(String[] args) throws IOException {
-        for (int i = 0; i <= 30; i++) {
+        for (int i = 0; i <= 15; i++) {
             for (int j = 0; j < 3; j++) {
-//                BufferedWriter writer = new BufferedWriter(new FileWriter("test" + (i * 3 + j) + ".in"));
-//                double a = new Random().nextDouble() * 5;
-//                double x0 = new Random().nextDouble() * 5, y0 = new Random().nextDouble() * 5;
-//                writer.write(a + "\n" + recGen(i) + "\n" + x0 + "\n" + y0);
-//                writer.close();
-                if (ExpressionUtils.bad(ExpressionUtils.simplify(ExpressionUtils.parse(recGen(i).toString())))) {
-                    System.out.println("adsds");
-                }
+                BufferedWriter writer = new BufferedWriter(new FileWriter("test" + (i * 3 + j) + ".in"));
+                double a = new Random().nextDouble() * 5;
+                double x0 = new Random().nextDouble() * 5, y0 = new Random().nextDouble() * 5;
+                writer.write(a + "\n" + recGen(i) + "\n" + x0 + "\n" + y0);
+                writer.close();
             }
         }
     }
