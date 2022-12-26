@@ -12,7 +12,6 @@ public class Main {
     }
 
     private void solve(int x) throws IOException {
-        System.out.println(x);
         Scanner sc = new Scanner(new File("test" + x + ".in")).useLocale(Locale.US);
         double a = sc.nextDouble();
         sc.nextLine();

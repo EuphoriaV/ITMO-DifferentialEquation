@@ -111,7 +111,7 @@ public class ExpressionUtils {
             ((DoubleExpression) expression).setExp2(simplifyMult(((DoubleExpression) expression).getExp2()));
         }
         if (expression instanceof Negate) {
-            expression = simplifyMult(((Negate) expression).getExp());
+            expression = new Negate(simplifyMult(((Negate) expression).getExp()));
         }
         return expression;
     }
