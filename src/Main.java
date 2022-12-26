@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        for (int i = 0; i < 48; i++) {
+        for (int i = 0; i < 48; i++){
             new Main().solve(i);
         }
     }

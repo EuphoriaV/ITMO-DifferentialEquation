@@ -10,8 +10,8 @@ public class GenerateTest {
         for (int i = 0; i <= 15; i++) {
             for (int j = 0; j < 3; j++) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter("test" + (i * 3 + j) + ".in"));
-                double a = new Random().nextDouble() * 5;
-                double x0 = new Random().nextDouble() * 5, y0 = new Random().nextDouble() * 5;
+                double a = new Random().nextDouble() * 5 + 1;
+                double x0 = new Random().nextDouble() * 5 + 1, y0 = new Random().nextDouble() * 5 + 1;
                 writer.write(a + "\n" + recGen(i) + "\n" + x0 + "\n" + y0);
                 writer.close();
             }
@@ -22,7 +22,7 @@ public class GenerateTest {
         if (n == 0) {
             boolean constant = (new Random().nextInt() % 2 + 2) % 2 == 0;
             if (constant) {
-                return new Const(new Random().nextDouble() * 10);
+                return new Const(new Random().nextDouble() * 10 + 1);
             } else {
                 return new Variable();
             }
